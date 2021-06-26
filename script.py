@@ -3,18 +3,12 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from time import sleep
-# Khởi tạo biến
-userName = input("Tài khoản: ")
-passWord = input("Mật khẩu: ")
-namHoc = input("Năm học (VD: 2020-2021): ")
-hocKy = input("Học kỳ (VD: Học kỳ 1): ")
-tuanHoc = input("Tuần học (VD: 8): ")
-
-driver = webdriver.Edge(executable_path='.\Driver\msedgedriver.exe')
+import json
+from msedge.selenium_tools import Edge, EdgeOptions
 
 
-def Login(Username, Password):
-    # Khởi tạo driver
+# Function
+def Login(driver, Username, Password):
     driver.get("https://online.hcmute.edu.vn")
     driver.find_element_by_id("ctl00_lbtDangnhap").click()
     driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_txtUserName").send_keys(Username)
@@ -30,14 +24,14 @@ def Login(Username, Password):
         return True
 
 
-def Crawl(NamHoc, HocKy, TuanHoc):
+def Crawl(driver,NamHoc, HocKy, TuanHoc):
     driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_lnkThoiKhoaBieu").click()
     selectNamHoc = Select(driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_ctl00_ddlNamHoc"))
-    selectNamHoc.select_by_value(namHoc)
+    selectNamHoc.select_by_value(NamHoc)
     selectHocKy = Select(driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_ctl00_ddlHocKy"))
-    selectHocKy.select_by_visible_text(hocKy)
+    selectHocKy.select_by_visible_text(HocKy)
     selectTuanHoc = Select(driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_ctl00_ddlTuan"))
-    selectTuanHoc.select_by_visible_text(tuanHoc)
+    selectTuanHoc.select_by_visible_text(TuanHoc)
     soHang = len(driver.find_elements_by_xpath("/html/body/div/form/table/tbody/tr[5]/td/table/tbody/tr[1]/td[2]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody/tr[2]/td/table/tbody/tr"))
     soCot = len(driver.find_elements_by_xpath("/html/body/div/form/table/tbody/tr[5]/td/table/tbody/tr[1]/td[2]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody/tr[2]/td/table/tbody/tr[1]/td"))
     thoiKhoaBieu = {'THỨ 2': [], 'THỨ 3': [], 'THỨ 4': [], 'THỨ 5': [], 'THỨ 6': [], 'THỨ 7': []}
@@ -56,8 +50,57 @@ def Crawl(NamHoc, HocKy, TuanHoc):
                                   'Giáo viên: ': crawlList[3],
                                   'Phòng học: ': driver.find_element_by_xpath(phongHoc).text}
                 thoiKhoaBieu[THU].append(thongTinMonHoc)
-    driver.close()
     return thoiKhoaBieu
 
-Login(userName,passWord)
-print(Crawl(namHoc,hocKy,tuanHoc))
+def SaveFile(thoiKhoaBieu):
+    file = open("ThoiKhoaBieu.json", "w")
+    json.dump(thoiKhoaBieu, file)
+    file.close()
+    return
+
+
+def Run():
+    userName = input("Tài khoản: ")
+    passWord = input("Mật khẩu: ")
+    namHoc = input("Năm học (VD: 2020-2021): ")
+    hocKy = input("Học kỳ (VD: Học kỳ 1): ")
+    tuanHoc = input("Tuần học (VD: 8): ")
+    ThoiKhoaBieu = {}
+    options = EdgeOptions()
+    options.use_chromium = True
+    options.add_argument('headless')
+    options.add_argument('window-size=1920x1080')
+    options.add_argument("disable-gpu")
+    options.binary_location = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+    driver = Edge(executable_path='.\Driver\msedgedriver.exe', options=options)
+
+    if (Login(driver,userName, passWord)):
+        #print(Crawl(driver,namHoc, hocKy, tuanHoc))
+        ThoiKhoaBieu = Crawl(driver,namHoc, hocKy, tuanHoc)
+    else:
+        while Login(driver,userName, passWord) == False:
+            userName = input("Tài khoản: ")
+            passWord = input("Mật khẩu: ")
+            Login(driver,userName, passWord)
+        #print(Crawl(driver,namHoc, hocKy, tuanHoc))
+        ThoiKhoaBieu = Crawl(driver, namHoc, hocKy, tuanHoc)
+    print(ThoiKhoaBieu)
+    SaveFile(ThoiKhoaBieu)
+    driver.close()
+# Chạy chương trình
+Run()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
