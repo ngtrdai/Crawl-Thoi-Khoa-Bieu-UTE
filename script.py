@@ -6,9 +6,9 @@ from time import sleep
 import json
 from msedge.selenium_tools import Edge, EdgeOptions
 
-
 # Function
 def Login(driver, Username, Password):
+    '''HÀM ĐĂNG NHẬP VÀ KHỞI TẠO DRIVER'''
     driver.get("https://online.hcmute.edu.vn")
     driver.find_element_by_id("ctl00_lbtDangnhap").click()
     driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_txtUserName").send_keys(Username)
@@ -16,7 +16,7 @@ def Login(driver, Username, Password):
     driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_btLogin").click()
     sleep(1)
     try:
-        alert = driver.switch_to_alert().text
+        alert = driver.switch_to_alert().text # Khi đăng nhập sai sẽ có popup cảnh báo, dùng câu lệnh này để lấy thông tin popup
         print("Đăng nhập thất bại")
         return False
     except:
@@ -25,6 +25,7 @@ def Login(driver, Username, Password):
 
 
 def Crawl(driver,NamHoc, HocKy, TuanHoc):
+    '''HÀM CRAWL DỮ LIỆU'''
     driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_lnkThoiKhoaBieu").click()
     selectNamHoc = Select(driver.find_element_by_id("ctl00_ContentPlaceHolder1_ctl00_ctl00_ctl00_ddlNamHoc"))
     selectNamHoc.select_by_value(NamHoc)
@@ -53,6 +54,10 @@ def Crawl(driver,NamHoc, HocKy, TuanHoc):
     return thoiKhoaBieu
 
 def SaveFile(thoiKhoaBieu, isVietnamese=True):
+    '''
+        HÀM LƯU DỮ LIỆU VÀO FILE JSON
+        CÓ 2 SỰ LỰA CHỌN LÀ LƯU JSON VỚI TIẾNG VIỆT VÀ LƯU JSON BÌNH THƯỜNG BỊ MÃ HÓA
+    '''
     if isVietnamese:
         with open('ThoiKhoaBieu.json', 'w', encoding='utf-8') as jsonFile:
             json.dump(thoiKhoaBieu, jsonFile, indent=2, ensure_ascii=False)
@@ -62,10 +67,10 @@ def SaveFile(thoiKhoaBieu, isVietnamese=True):
     return
 
 def OpenFile(filePath):
+    '''HÀM MỞ FILE, HIỆN CHỈ HOẠT ĐỘNG VỚI JSON ĐƯỢC MÃ HÓA KHÔNG CHẠY ĐƯỢC VỚI JSON TIẾNG VIỆT'''
     with open(filePath) as jsonFile:
         s = json.load(jsonFile)
     print(s)
-
 
 def Run():
     userName = input("Tài khoản: ")
@@ -81,7 +86,6 @@ def Run():
     options.add_argument("disable-gpu")
     options.binary_location = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
     driver = Edge(executable_path='.\Driver\msedgedriver.exe', options=options)
-
     if (Login(driver,userName, passWord)):
         #print(Crawl(driver,namHoc, hocKy, tuanHoc))
         ThoiKhoaBieu = Crawl(driver,namHoc, hocKy, tuanHoc)
@@ -99,18 +103,3 @@ def Run():
 
 # Chạy chương trình
 Run()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
