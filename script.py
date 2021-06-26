@@ -52,11 +52,19 @@ def Crawl(driver,NamHoc, HocKy, TuanHoc):
                 thoiKhoaBieu[THU].append(thongTinMonHoc)
     return thoiKhoaBieu
 
-def SaveFile(thoiKhoaBieu):
-    file = open("ThoiKhoaBieu.json", "w")
-    json.dump(thoiKhoaBieu, file)
-    file.close()
+def SaveFile(thoiKhoaBieu, isVietnamese=True):
+    if isVietnamese:
+        with open('ThoiKhoaBieu.json', 'w', encoding='utf-8') as jsonFile:
+            json.dump(thoiKhoaBieu, jsonFile, indent=2, ensure_ascii=False)
+    else:
+        with open('ThoiKhoaBieu.json', 'w') as jsonFile:
+            json.dump(thoiKhoaBieu, jsonFile, indent=2)
     return
+
+def OpenFile(filePath):
+    with open(filePath) as jsonFile:
+        s = json.load(jsonFile)
+    print(s)
 
 
 def Run():
@@ -85,8 +93,10 @@ def Run():
         #print(Crawl(driver,namHoc, hocKy, tuanHoc))
         ThoiKhoaBieu = Crawl(driver, namHoc, hocKy, tuanHoc)
     print(ThoiKhoaBieu)
-    SaveFile(ThoiKhoaBieu)
+    SaveFile(ThoiKhoaBieu, isVietnamese=True)
+    #OpenFile('ThoiKhoaBieu.json')
     driver.close()
+
 # Chạy chương trình
 Run()
 
