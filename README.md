@@ -9,6 +9,17 @@
 * Thư viện Selenium Python - [Tài liệu tham khảo!](https://selenium-python.readthedocs.io/)
 * Microsoft Edge Driver - [Link tải bản mới nhất!](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)
 
+## Ghi chú
+Những option này giúp tắt các lỗi hay gặp khi sử dụng MSEdge Driver, và còn nhằm mục đích cho driver chạy ngầm, không hiển thị lên màn hình.
+```python
+options = EdgeOptions()
+options.use_chromium = True
+options.add_argument('headless')
+options.add_argument('window-size=1920x1080')
+options.add_argument("disable-gpu")
+options.binary_location = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+driver = Edge(executable_path='.\Driver\msedgedriver.exe', options=options)
+```
 ## Tool sẽ xuất ra một file JSON dạng như sau
 ```json
 {
