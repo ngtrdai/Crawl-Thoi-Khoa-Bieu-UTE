@@ -88,3 +88,4 @@ driver = Edge(executable_path='.\Driver\msedgedriver.exe', options=options)
 
 ## Phát triển thêm
 ***Với dữ liệu như thế này có thể phát triển thêm các tool khác hay ho hơn dựa trên dữ liệu này.***
+Thanks! ❤️
